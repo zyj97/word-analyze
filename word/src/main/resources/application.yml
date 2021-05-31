@@ -1,0 +1,10 @@
+server:
+  port: 8090
+  max-http-header-size: 100MB
+  max-file-size: 100MB
+spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB
+
+
