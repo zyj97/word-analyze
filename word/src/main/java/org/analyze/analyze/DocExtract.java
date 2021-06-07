@@ -1,6 +1,9 @@
 package org.analyze.analyze;
 
+import org.apache.poi.hpsf.DocumentSummaryInformation;
+import org.apache.poi.hpsf.SummaryInformation;
 import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.hwpf.usermodel.*;
 import org.apache.poi.openxml4j.opc.PackagePart;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -52,6 +55,16 @@ public class DocExtract {
 
             Range range = hwpf.getRange();//得到文档的读取范围
             TableIterator it = new TableIterator(range);
+            for (int o = 0; o< range.numCharacterRuns();o++){
+                short i = range.getCharacterRun(o).getStyleIndex();
+                System.out.println("============格式为" + i);
+                System.out.println(range.getCharacterRun(o).getFontName());
+                System.out.println(range.getCharacterRun(o).getFontSize());
+                System.out.println("颜色为" +range.getCharacterRun(o).getColor());
+
+                System.out.println("内容" +range.getCharacterRun(o).getParagraph(0).text());
+            }
+
 
             if (it.hasNext()) {
                 Table table = it.next();
@@ -82,6 +95,9 @@ public class DocExtract {
 
 
     }
+
+
+
 
 
 }
