@@ -3,6 +3,7 @@ package org.analyze.controller;
 import org.analyze.analyze.DocExtract;
 import org.analyze.pojo.ResMessage;
 import org.analyze.service.FileService;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +22,9 @@ public class FileController {
 
 
     @PostMapping("/upload")
-    public ResMessage upload(MultipartFile file){
-        fileService.analyze(file);
-        return new ResMessage();
+    public JSONObject upload(MultipartFile file){
+        return fileService.analyze(file);
+
     }
 
 

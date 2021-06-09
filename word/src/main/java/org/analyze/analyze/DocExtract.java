@@ -8,6 +8,7 @@ import org.apache.poi.hwpf.usermodel.*;
 import org.apache.poi.openxml4j.opc.PackagePart;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -56,13 +57,18 @@ public class DocExtract {
             Range range = hwpf.getRange();//得到文档的读取范围
             TableIterator it = new TableIterator(range);
             for (int o = 0; o< range.numCharacterRuns();o++){
+                String text = range.getCharacterRun(o).text();
+                text  = text.trim();
+                if (StringUtils.isEmpty(text)){
+                    continue;
+                }
                 short i = range.getCharacterRun(o).getStyleIndex();
                 System.out.println("============格式为" + i);
                 System.out.println(range.getCharacterRun(o).getFontName());
                 System.out.println(range.getCharacterRun(o).getFontSize());
                 System.out.println("颜色为" +range.getCharacterRun(o).getColor());
 
-                System.out.println("内容" +range.getCharacterRun(o).getParagraph(0).text());
+                System.out.println("内容" +range.getCharacterRun(o).text());
             }
 
 

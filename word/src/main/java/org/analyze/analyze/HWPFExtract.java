@@ -2,6 +2,9 @@ package org.analyze.analyze;
 
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.*;
+import org.apache.poi.poifs.filesystem.DirectoryNode;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,6 +12,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: zyj
@@ -16,18 +23,34 @@ import java.io.InputStream;
  */
 @Component
 public class HWPFExtract {
-    public void testReadByDoc(MultipartFile file) throws Exception {
+    /** 分隔符数组 */
+    private final static String[] separaters = {"。", "，", "！", "？", "；"};
+
+    public JSONObject testReadByDoc(MultipartFile file) throws Exception {
+        JSONObject jsonObject = new JSONObject();
         InputStream is = file.getInputStream();
         HWPFDocument doc = new HWPFDocument(is);
         //输出书签信息
 //        this.printInfo(doc.getBookmarks());
         //输出文本
-        System.out.println(doc.getDocumentText());
+//        System.out.println(doc.getDocumentText());
         Range range = doc.getRange();
-//    this.insertInfo(range);
-        this.printInfo(range);
+//        Range range = doc.getCommentsRange();
+////    this.insertInfo(range);
+        JSONArray text = printInfo(range);
+        jsonObject.put("内容" ,text);
+
+//        Range range1 =doc.getOverallRange();
+//        printInfo(range1);
+
+
+
+
+
+
         //读表格
-//        this.readTable(range);
+        JSONObject table = readTable(range);
+        jsonObject.put("表格",table);
         //读列表
 //        this.readList(range);
         //删除range
@@ -35,8 +58,13 @@ public class HWPFExtract {
 //        r.delete();//在内存中进行删除，如果需要保存到文件中需要再把它写回文件
         //把当前HWPFDocument写到输出流中
 //        doc.write(new FileOutputStream("D:\\test.doc"));
+//        readParagraph(range);
         this.closeStream(is);
+        return jsonObject;
     }
+
+
+
 
     /**
      * 关闭输入流
@@ -73,13 +101,20 @@ public class HWPFExtract {
      * 每一个回车符代表一个段落，所以对于表格而言，每一个单元格至少包含一个段落，每行结束都是一个段落。
      * @param range
      */
-    private void readTable(Range range) {
+    private JSONObject readTable(Range range) {
+        System.out.println("========================================================解析表格");
         //遍历range范围内的table。
         TableIterator tableIter = new TableIterator(range);
         Table table;
         TableRow row;
         TableCell cell;
+        JSONObject  tableList  = new JSONObject();
+        int i = 0;
         while (tableIter.hasNext()) {
+            i++;
+            JSONArray jsonArray = new JSONArray();
+
+
             table = tableIter.next();
             int rowNum = table.numRows();
             for (int j=0; j<rowNum; j++) {
@@ -88,10 +123,20 @@ public class HWPFExtract {
                 for (int k=0; k<cellNum; k++) {
                     cell = row.getCell(k);
                     //输出单元格的文本
-                    System.out.println(cell.text().trim());
+                    JSONObject tableJson = new JSONObject();
+                    System.out.println("=====行号是"+j + "=====列号" + k +"表格内容是" + cell.text());
+                    tableJson.put("行号",j);
+                    tableJson.put("列号",k);
+                    tableJson.put("内容",cell.text());
+                    jsonArray.add(tableJson);
+
                 }
             }
+            tableList.put("表格" + i,jsonArray);
+
         }
+        return tableList;
+
     }
 
     /**
@@ -116,47 +161,61 @@ public class HWPFExtract {
      * 输出Range
      * @param range
      */
-    private void printInfo(Range range) {
+    private JSONArray printInfo(Range range) {
         //获取段落数
         int paraNum = range.numParagraphs();
         System.out.println(paraNum);
+        JSONArray jsonArray = new JSONArray();
         for (int i=0; i<paraNum; i++) {
-//       this.insertInfo(range.getParagraph(i));
-            if (StringUtils.isEmpty(range.getParagraph(i).text())){
+
+            Paragraph paragraph = range.getParagraph(i);
+            //文本在表格中 所以不需要高
+            if (paragraph.isInTable()){
+                continue;
+            }
+            String text = paragraph.text().trim();
+
+            if (StringUtils.isEmpty(text)){
                continue;
             }
-            if (range.getParagraph(i).text()== " "){
+            if (text== "\r"){
                 continue;
             }
-            if (range.getParagraph(i).text()== "\r"){
-                continue;
+
+            JSONObject jsonObject = new JSONObject();
+            String paragraphStr = "段落" + (i+1) + "：" + text;
+            int runs = paragraph.numCharacterRuns();
+            for (int r = 0;r<runs;r++){
+                CharacterRun characterRun = paragraph.getCharacterRun(r);
+                String fontName = characterRun.getFontName();
+                int fontSize = characterRun.getFontSize();
+//                if (StringUtils.isEmpty(fontName) && fontSize != 0){
+                    System.out.println("字体为================" +fontName);
+                    System.out.println("字号为================" +fontSize);
+
+
+//                    break;
+//                }
+
+
             }
-            String a = range.getParagraph(i).text();
-            System.out.println("段落" + (i+1) + "：" + range.getParagraph(i).text());
+
+
+            System.out.println("格式为================" + paragraph.getStyleIndex());
+            System.out.println("内容为" + paragraphStr);
 //            System.out.println("字体为================" + range.getCharacterRun(i).getStyleIndex());
-            System.out.println("格式为================" + range.getParagraph(i).getStyleIndex());
-            System.out.println("字体为================" +range.getParagraph(i).getCharacterRun(0).getFontName());
-            System.out.println("字号为================" +range.getParagraph(i).getCharacterRun(0).getFontSize());
-//            if (i == (paraNum-1)) {
-//                this.insertInfo(range.getParagraph(i));
-//            }
+//            System.out.println("格式为================" + range.getParagraph(i).getStyleIndex());
+
+
+            jsonObject.put("格式", range.getParagraph(i).getStyleIndex());
+
+            jsonObject.put("字体",range.getParagraph(i).getCharacterRun(0).getFontName());
+            jsonObject.put("字号",range.getParagraph(i).getCharacterRun(0).getFontSize());
+            jsonObject.put("内容","段落" + (i+1) + "：" +text);
+            jsonArray.add(jsonObject);
         }
 
-        int secNum = range.numSections();
-        System.out.println(secNum);
-        Section section;
-        for (int i=0; i<secNum; i++) {
-            section = range.getSection(i);
-            System.out.println("************");
-            System.out.println(section.getMarginLeft());
-            System.out.println(section.getMarginRight());
-            System.out.println(section.getMarginTop());
-            System.out.println(section.getMarginBottom());
-            System.out.println(section.getPageHeight());
-            System.out.println(section.text());
-            System.out.println(range.getCharacterRun(i).getStyleIndex());
-            System.out.println("==============================");
-        }
+       return jsonArray;
     }
 
     /**
