@@ -1,7 +1,6 @@
 package org.analyze.service;
 
 import org.analyze.analyze.*;
-import org.checkerframework.checker.units.qual.A;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ public class FileService {
     @Autowired
     DocExtract docExtract;
     @Autowired
-    WordExtract wordExtract;
+    HWPEWordExtract HWPEWordExtract;
     @Autowired
     HWPFExtract hwpfExtract;
     @Autowired
@@ -27,6 +26,8 @@ public class FileService {
     TiKaExtract tiKaExtract;
     @Autowired
     DocxExtract docxExtract;
+    @Autowired
+    XWPFWordExtract xwpfWordExtract;
 
     public JSONObject analyze(MultipartFile file){
         JSONObject jsonObject = new JSONObject();
@@ -43,9 +44,12 @@ public class FileService {
                 e.printStackTrace();
             }
         }else if(fileName.endsWith(".docx")){
-            docxExtract.extract(file);
-
-
+//            docxExtract.extract(file);
+            try {
+                xwpfWordExtract.testReadByExtractor(file);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return  jsonObject;
 

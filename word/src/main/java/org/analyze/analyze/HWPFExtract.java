@@ -1,21 +1,19 @@
 package org.analyze.analyze;
 
 import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.model.StyleDescription;
+import org.apache.poi.hwpf.model.StyleSheet;
 import org.apache.poi.hwpf.usermodel.*;
-import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Author: zyj
@@ -37,11 +35,15 @@ public class HWPFExtract {
         Range range = doc.getRange();
 //        Range range = doc.getCommentsRange();
 ////    this.insertInfo(range);
-        JSONArray text = printInfo(range);
+
+
+        JSONArray text = printInfo(range,doc);
         jsonObject.put("内容" ,text);
 
 //        Range range1 =doc.getOverallRange();
 //        printInfo(range1);
+
+
 
 
 
@@ -113,6 +115,9 @@ public class HWPFExtract {
         while (tableIter.hasNext()) {
             i++;
             JSONArray jsonArray = new JSONArray();
+            if (i>1){
+                break;
+            }
 
 
             table = tableIter.next();
@@ -161,7 +166,7 @@ public class HWPFExtract {
      * 输出Range
      * @param range
      */
-    private JSONArray printInfo(Range range) {
+    private JSONArray printInfo(Range range,HWPFDocument doc) {
         //获取段落数
         int paraNum = range.numParagraphs();
         System.out.println(paraNum);
@@ -182,6 +187,8 @@ public class HWPFExtract {
                 continue;
             }
 
+
+
             JSONObject jsonObject = new JSONObject();
             String paragraphStr = "段落" + (i+1) + "：" + text;
             int runs = paragraph.numCharacterRuns();
@@ -190,28 +197,41 @@ public class HWPFExtract {
                 String fontName = characterRun.getFontName();
                 int fontSize = characterRun.getFontSize();
 //                if (StringUtils.isEmpty(fontName) && fontSize != 0){
-                    System.out.println("字体为================" +fontName);
-                    System.out.println("字号为================" +fontSize);
-
-
 //                    break;
 //                }
 
 
             }
+            int numStyles =doc.getStyleSheet().numStyles();
+            int styleIndex = paragraph.getStyleIndex();
+            String styleName = "";
+            if (numStyles > styleIndex) {
+                StyleSheet style_sheet = doc.getStyleSheet();
+                StyleDescription style = style_sheet.getStyleDescription(styleIndex);
+                styleName = style.getName();
+                styleName = styleName.replaceAll(" ","");
+            }
+
+//            System.out.println("");
 
 
-            System.out.println("格式为================" + paragraph.getStyleIndex());
+            System.out.println("字体为================" +paragraph.getCharacterRun(0).getFontName());
+            System.out.println("字号为================" +paragraph.getCharacterRun(0).getFontSize());
+            System.out.println("格式为================" + styleName);
             System.out.println("内容为" + paragraphStr);
 //            System.out.println("字体为================" + range.getCharacterRun(i).getStyleIndex());
 //            System.out.println("格式为================" + range.getParagraph(i).getStyleIndex());
 
-
+            if ("标题 1".equals(styleName)){
+                System.out.println("000000000000000000000");
+            }
+            if ("标题1".equals(styleName)){
+                System.out.println("444444444444444444444444444444444444");
+            }
             jsonObject.put("格式", range.getParagraph(i).getStyleIndex());
-
             jsonObject.put("字体",range.getParagraph(i).getCharacterRun(0).getFontName());
             jsonObject.put("字号",range.getParagraph(i).getCharacterRun(0).getFontSize());
-            jsonObject.put("内容","段落" + (i+1) + "：" +text);
+            jsonObject.put("内容","段落" + (i+1) + "：" +text );
             jsonArray.add(jsonObject);
         }
 
@@ -225,4 +245,7 @@ public class HWPFExtract {
     private void insertInfo(Range range) {
         range.insertAfter("Hello");
     }
+
+
+
 }

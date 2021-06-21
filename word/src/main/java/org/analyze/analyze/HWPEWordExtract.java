@@ -14,7 +14,7 @@ import java.io.InputStream;
  * @Date: 2021/6/3
  */
 @Component
-public class WordExtract {
+public class HWPEWordExtract {
     public void testReadByExtractor(MultipartFile file) throws Exception {
         InputStream inputStream = file.getInputStream();;
         WordExtractor extractor = new WordExtractor(inputStream);
@@ -36,6 +36,8 @@ public class WordExtract {
         printInfo(extractor.getSummaryInformation());
         //输出当前word的一些信息
         this.printInfo(extractor.getDocSummaryInformation());
+        extractor.close();
+
         this.closeStream(inputStream);
     }
 

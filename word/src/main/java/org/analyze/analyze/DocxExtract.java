@@ -1,13 +1,14 @@
 package org.analyze.analyze;
 
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ooxml.POIXMLProperties;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -15,40 +16,23 @@ import java.util.List;
  * @Date: 2021/6/7
  */
 @Component
+
 public class DocxExtract {
+
     public void extract(MultipartFile file){
         try (InputStream inputStream = file.getInputStream()) {
 
             XWPFDocument doc = new XWPFDocument(inputStream);
-            Integer tableCount = 0;
+            System.out.println("获取属性");
+            POIXMLProperties poixmlProperties = doc.getProperties();
+            POIXMLProperties.CustomProperties customProperties = poixmlProperties.getCustomProperties();
 
-//            List<XWPFTable> tables = doc.getTables();
-//            for (XWPFTable table : tables) {
-//                // 获取表格的行
-//                if (tableCount >0){
-//                    break;
-//                }
-//
-//                List<XWPFTableRow> rows = table.getRows();
-//                for (int row = 0;row<rows.size() ;row ++ ) {
-//                    XWPFTableRow xwpfTableRow = rows.get(row);
-//                    // 获取表格的每个单元格
-//                    List<XWPFTableCell> tableCells = xwpfTableRow.getTableCells();
-//                    for (int column=0;column<tableCells.size();column++ ) {
-//                        XWPFTableCell cell  = tableCells.get(column);
-//                        // 获取单元格的内容
-//                        String text1 = cell.getText();
-//                        System.out.println(text1);
-//                        HashMap<Integer,String> tableInfo = tableInfoMap.get(row + 1);
-//                        if (tableInfo == null){
-//                            tableInfo = new HashMap<>();
-//                        }
-//                        tableInfo.put(column + 1,text1);
-//                        tableInfoMap.put(row +1,tableInfo);
-//                    }
-//                }
-//                tableCount ++;
-//            }
+
+            POIXMLProperties.CoreProperties properties= doc.getProperties().getCoreProperties();
+            System.out.println(properties.getCategory());
+            System.out.println(properties.getContentStatus());
+            System.out.println(properties.getContentType());
+
 
             List<XWPFParagraph> paras = doc.getParagraphs();
             for (XWPFParagraph paragraph : paras) {
@@ -62,7 +46,7 @@ public class DocxExtract {
                 }
 
                 List<XWPFRun> runs = paragraph.getRuns();
-                String styleName = paragraph.getStyle();
+                String styleName = getDocxStyleName(doc,paragraph);
                 String font = null;
                 float fontSize = 0.0f;
                 for (XWPFRun xwpfRun : runs) {
@@ -76,9 +60,33 @@ public class DocxExtract {
                 System.out.println("===============");
                 System.out.println(a);
                 System.out.println(styleName);
+                System.out.println(paragraph.getStyle());
             }
     } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getDocxStyleName(XWPFDocument doc, XWPFParagraph paragraph){
+        String styleName = "";
+        int numStyles =doc.getStyles().getNumberOfStyles();
+
+        String styleIndex = paragraph.getStyle();
+        if (StringUtils.isEmpty(styleIndex)){
+            return styleName;
+        }
+
+
+//        if (numStyles > styleIndex) {
+            XWPFStyles style_sheet = doc.getStyles();
+
+            XWPFStyle style = style_sheet.getStyle(styleIndex);
+
+            styleName = style.getName();
+            styleName.replaceAll(" ","");
+            styleName.replaceAll("  ","");
+            styleName.trim();
+//        }
+        return styleName;
     }
 }

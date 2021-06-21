@@ -29,55 +29,8 @@ public class SpireExtract {
 
         try  {
             int paragraphsCount = 0;
-//            Document document = new Document("");
-//            SectionCollection sections = document.getSections();
-//            document.getSections().get(0).getParagraphs().removeAt(1);
-//            document.saveToFile("D:\\"+ paragraphsCount +"RemoveParagraph.doc",FileFormat.Doc);
-
             Document document = new Document();
 
-            //加载示例文档
-            document.loadFromFile("D:\\2018B2(2)(1)(1)(1)(3)(1).doc");
-
-            //删除第一节的第二段
-            document.getSections().get(0).getParagraphs().removeAt(1);
-
-            //保存文档
-            document.saveToFile("D:\\"+ paragraphsCount +"RemoveParagraph.doc", FileFormat.Docx_2013);
-//            //一个section解析一次
-//            System.out.println(sections.getCount());
-//            for (int i = 0; i < sections.getCount(); i++) {
-//
-//                Section section = sections.get(i);
-//               paragraphsCount = paragraphsCount + section.getParagraphs().getCount();
-//                System.out.println(paragraphsCount);
-//            }
-//
-//            System.out.println(paragraphsCount);
-//
-//            for (int i = 0; i < sections.getCount(); i++) {
-//                Section section = sections.get(i);
-//                ParagraphCollection paragraphs = section.getParagraphs();
-//
-//                int max = 480;
-//                if ( max > paragraphs.getCount()){
-//                    max = paragraphs.getCount();
-//                }
-//
-////                for (int j = 0;j<max;j++) {
-////                    Paragraph paragraph = paragraphs.get(j);
-////                    String styleName = paragraph.getStyleName();
-////                    String paragraphText = paragraph.getText();
-////                    System.out.println("++++++"  + j  );
-////                    System.out.println(paragraphText);
-//////
-////                }
-//
-////                for (int j = 0;j<200;j++){
-//
-////                }
-//
-//            }
 
         } catch (Exception e) {
             e.printStackTrace();
