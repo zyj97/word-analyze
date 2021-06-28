@@ -5,6 +5,10 @@ server:
 spring:
   servlet:
     multipart:
-      max-file-size: 50MB
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 200MB
 
-
+path:
+  savePath: D:\usr\temp\
+  txtPath: D:\usr\temp\

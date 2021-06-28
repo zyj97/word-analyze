@@ -28,4 +28,18 @@ public class FileController {
     }
 
 
+    @PostMapping("/zipUncompress")
+    public String zipUncompress(MultipartFile file){
+        try {
+            return fileService.zipDecompression(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "22";
+
+    }
+
+
+
+
 }
