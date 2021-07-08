@@ -53,7 +53,6 @@ public class DocExtract {
             inputStream = file.getInputStream();
             POIFSFileSystem pfs = new POIFSFileSystem(inputStream);
             HWPFDocument hwpf = new HWPFDocument(pfs);
-
             Range range = hwpf.getRange();//得到文档的读取范围
             TableIterator it = new TableIterator(range);
             for (int o = 0; o< range.numCharacterRuns();o++){
@@ -62,12 +61,14 @@ public class DocExtract {
                 if (StringUtils.isEmpty(text)){
                     continue;
                 }
+
+
+
                 short i = range.getCharacterRun(o).getStyleIndex();
                 System.out.println("============格式为" + i);
                 System.out.println(range.getCharacterRun(o).getFontName());
                 System.out.println(range.getCharacterRun(o).getFontSize());
                 System.out.println("颜色为" +range.getCharacterRun(o).getColor());
-
                 System.out.println("内容" +range.getCharacterRun(o).text());
             }
 
@@ -78,8 +79,6 @@ public class DocExtract {
                     TableRow rows = table.getRow(row);
 
                     for (int column = 0; column < rows.numCells(); column++) {
-
-                        Paragraph f = rows.getParagraph(column);
                         TableCell tableCell = rows.getCell(column);
                         System.out.println("==================row");
 

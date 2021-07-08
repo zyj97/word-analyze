@@ -34,6 +34,11 @@ public class FileService {
     DocxExtract docxExtract;
     @Autowired
     XWPFWordExtract xwpfWordExtract;
+    @Autowired
+    PDFExtract pdfExtract;
+    @Autowired
+    DocxExtract extract;
+
     @Value(value = "${path.savePath}")
     private String savePath;
 
@@ -54,10 +59,13 @@ public class FileService {
         }else if(fileName.endsWith(".docx")){
 //            docxExtract.extract(file);
             try {
-                xwpfWordExtract.testReadByExtractor(file);
+                extract.extract(file);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }else if (fileName.endsWith(".pdf")){
+
+            pdfExtract.extract(file);
         }
         return  jsonObject;
 
@@ -72,7 +80,7 @@ public class FileService {
         if (!srcFile.exists()) {
             throw new Exception(srcFile.getPath() + "所指文件不存在");
         }
-        String destDirPath = savePath.concat(File.separator).concat(inputFile.replace(".zip", ""));
+        String destDirPath = savePath.concat("1").concat(File.separator).concat(inputFile.replace(".zip", ""));
         //创建压缩文件对象
         ZipFile zipFile = new ZipFile(srcFile);
         //开始解压
@@ -84,7 +92,7 @@ public class FileService {
                 srcFile.mkdirs();
             } else {
                 // 如果是文件，就先创建一个文件，然后用io流把内容copy过去
-                File targetFile = new File(savePath + "/" + entry.getName());
+                File targetFile = new File( savePath.concat(File.separator).concat("1").concat(File.separator).concat(entry.getName()) );
                 // 保证这个文件的父文件夹必须要存在
                 if (!targetFile.getParentFile().exists()) {
                     targetFile.getParentFile().mkdirs();
