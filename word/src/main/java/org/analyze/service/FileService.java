@@ -2,6 +2,7 @@ package org.analyze.service;
 
 import org.analyze.analyze.*;
 import org.analyze.utils.MultipartFileToFileUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,12 +46,14 @@ public class FileService {
     public JSONObject analyze(MultipartFile file){
         JSONObject jsonObject = new JSONObject();
         String fileName = file.getOriginalFilename();
+        JSONArray tables= new JSONArray();
+
         if (fileName.endsWith("doc")){
             try {
 //                docExtract.extract(file);
 //                wordExtract.testReadByExtractor(file);
 //                tiKaExtract.extract(file);
-                jsonObject = hwpfExtract.testReadByDoc(file);
+                 hwpfExtract.testReadByDoc(file);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (Exception e) {

@@ -1,9 +1,12 @@
 package org.analyze.analyze;
 
 import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.model.ListLevel;
+import org.apache.poi.hwpf.model.ListTables;
 import org.apache.poi.hwpf.model.StyleDescription;
 import org.apache.poi.hwpf.model.StyleSheet;
 import org.apache.poi.hwpf.usermodel.*;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Component;
@@ -216,6 +219,7 @@ public class HWPFExtract {
         if (numStyles > styleIndex) {
             StyleSheet style_sheet = doc.getStyleSheet();
             StyleDescription style = style_sheet.getStyleDescription(styleIndex);
+            System.out.println( style.getBaseStyle());
             styleName = style.getName();
             styleName = styleName.replaceAll(" ","");
         }
@@ -252,7 +256,7 @@ public class HWPFExtract {
         for (int i=0; i<paraNum; i++) {
 
             Paragraph paragraph = range.getParagraph(i);
-            //文本在表格中 所以不需要
+
 
             if (paragraph.isInTable()){
                 if (lastInTable){
@@ -265,6 +269,11 @@ public class HWPFExtract {
             }
             lastInTable = false;
 
+//            System.out.println("======================================");
+//
+//            System.out.println(paragraph.getIndentFromRight());
+//            System.out.println(paragraph.getFontAlignment());
+//            System.out.println(paragraph.getLeftBorder());
             String text = replaceSpecialChar( paragraph.text());
             if (StringUtils.isEmpty(text) || "\r".equals(text)){
                 continue;
@@ -274,7 +283,29 @@ public class HWPFExtract {
                 CharacterRun characterRun = paragraph.getCharacterRun(r);
                 String fontName = characterRun.getFontName();
                 int fontSize = characterRun.getFontSize();
+
             }
+
+            if (paragraph.isInList()) {
+                ListTables lTable = doc.getListTables();
+                ListLevel ll = lTable.getLevel(paragraph.getList().getLsid(), paragraph.getIlvl());
+
+                int id = paragraph.getList().getLsid();
+                int format = ll.getNumberFormat();
+                String text1 = ll.getNumberText();
+                System.out.println(String.valueOf(format));
+                System.out.println(text1);
+                System.out.println();
+
+                StringBuffer sb = new StringBuffer(text);
+                sb.insert(1,text1);
+                System.out.println(sb.toString());
+            }
+
+
+//                    (StyleSheet styleSheet,
+//                    ListTables listTables,
+//            int ilfo)
             String styleName = getStyleName(doc,paragraph);
             System.out.println("内容为" + text);
         }
@@ -333,7 +364,48 @@ public class HWPFExtract {
     }
 
 
-
+//    FileInputStream fis = new FileInputStream(file);
+//    HWPFDocument doc = new HWPFDocument(fis);
+//    // 文本
+//    Range range = doc.getRange();
+//    // 图片
+//    PicturesTable pTable = doc.getPicturesTable();
+//
+//    int idx = 0;
+//
+//    // 循环列表，处理段落内容
+//        for (int i = 0; i < range.numParagraphs(); i++) {
+//        // 段落内容取得
+//        Paragraph paragraph = range.getParagraph(i);
+//        if (pTable.hasPicture(paragraph.getCharacterRun(0))) {
+//            // 提取图片
+//            Picture pic = pTable.extractPicture(paragraph.getCharacterRun(0), false);
+//            // 返回POI建议的图片文件名
+//            String img = pic.suggestFullFileName();
+//            // 元素种类为段落的场合，读取段落内容
+//            Map<Integer, List<Object>> tmpMap = new HashMap<>();
+//            List<Object> tmpList = new ArrayList<>();
+//            tmpList.add(img);
+//            tmpMap.put(0, tmpList);
+//            rsMap.put(idx + "-IMAGE", tmpMap);
+//        } else {
+//            if (!paragraph.isInTable()) {
+//                // 元素种类为段落的场合，读取段落内容
+//                Map<Integer, List<Object>> tmpMap = new HashMap<>();
+//                tmpMap.put(0, readParagraph(paragraph));
+//                rsMap.put(idx + "-PARAGRAPH", tmpMap);
+//            } else {
+//                try {
+//                    // 元素种类为表格的场合，读取表格内容
+//                    Table table = range.getTable(paragraph);
+//                    rsMap.put(idx + "-TABLE", readTable(table));
+//                } catch (IllegalArgumentException e) {
+//                    continue;
+//                }
+//            }
+//        }
+//        idx++;
+//    }
 
 
 }

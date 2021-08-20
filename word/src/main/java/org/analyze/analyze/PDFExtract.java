@@ -37,10 +37,7 @@ public class PDFExtract {
             } else {
                 System.out.println( "This document does not contain any bookmarks" );
             }
-
-
-
-            } catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -73,6 +70,10 @@ public class PDFExtract {
             printBookmark( current,  "   "  + indentation  );  // 递归调用
             current = current.getNextSibling();
         }
+
+    }
+
+    public void printText(){
 
     }
 

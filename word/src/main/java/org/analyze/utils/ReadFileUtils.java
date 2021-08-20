@@ -9,7 +9,6 @@ import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.hslf.extractor.PowerPointExtractor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 
@@ -23,7 +22,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xslf.extractor.XSLFPowerPointExtractor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -100,7 +98,7 @@ public class ReadFileUtils {
                         return readPdf(filepath);
 
                 } else if ("ppt".equals(fileType) || "pptx".equals(fileType)) {
-                        return readPPT(fileType, filepath);
+//                        return readPPT(fileType, filepath);
 
                 } else {
                         System.out.println("不支持的文件类型！");
@@ -291,30 +289,30 @@ public class ReadFileUtils {
 
         }
 
-        private static String readPPT(String fileType, String filePath) {
-                try {
-                        if ("ppt".equals(fileType)) {
-                                PowerPointExtractor extractor = new PowerPointExtractor(new FileInputStream(new File(filePath)));
-                                return extractor.getText();
-
-                        } else if ("pptx".equals(fileType)) {
-                                return new XSLFPowerPointExtractor(POIXMLDocument.openPackage(filePath)).getText();
-
-                        }
-
-                } catch (IOException e) {
-                        e.fillInStackTrace();
-
-                } catch (XmlException e) {
-                        e.getMessage();
-
-                } catch (OpenXML4JException e) {
-                        e.getMessage();
-
-                }
-                return "";
-
-        }
+//        private static String readPPT(String fileType, String filePath) {
+//                try {
+//                        if ("ppt".equals(fileType)) {
+//                                PowerPointExtractor extractor = new PowerPointExtractor(new FileInputStream(new File(filePath)));
+//                                return extractor.getText();
+//
+//                        } else if ("pptx".equals(fileType)) {
+//                                return new XSLFPowerPointExtractor(POIXMLDocument.openPackage(filePath)).getText();
+//
+//                        }
+//
+//                } catch (IOException e) {
+//                        e.fillInStackTrace();
+//
+//                } catch (XmlException e) {
+//                        e.getMessage();
+//
+//                } catch (OpenXML4JException e) {
+//                        e.getMessage();
+//
+//                }
+//                return "";
+//
+//        }
 
 //        public void decompressToUUIDDirectory(File compressFile, String baseDirectory, List<String> decompressSuffs) throws Exception {
 //                List<AttachFile> attachFileList = new ArrayList<>();

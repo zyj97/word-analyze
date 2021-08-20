@@ -17,11 +17,13 @@ import java.io.InputStream;
  */
 @Component
 public class XWPFWordExtract {
-    public void testReadByExtractor(MultipartFile file) throws Exception {
+    public String testReadByExtractor(MultipartFile file) throws Exception {
         InputStream inputStream = file.getInputStream();;
         XWPFWordExtractor extractor = new XWPFWordExtractor(OPCPackage.open(inputStream));
         //输出word文档所有的文本
+       String str =  extractor.getText();
         System.out.println(extractor.getText());
+
 //        System.out.println(extractor.getTextFromPieces());
 //        //输出页眉的内容
 //        System.out.println("页眉：" + extractor.getHeaderText());
@@ -42,6 +44,7 @@ public class XWPFWordExtract {
         extractor.close();
 
         this.closeStream(inputStream);
+        return str;
     }
 
     private void printInfo(SummaryInformation info) {
