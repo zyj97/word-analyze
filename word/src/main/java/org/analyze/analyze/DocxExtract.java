@@ -4,6 +4,7 @@ package org.analyze.analyze;
 import com.microsoft.schemas.vml.CTShape;
 import org.analyze.utils.RomanUtils;
 import org.analyze.utils.StringsUtils;
+import org.analyze.utils.WordGradeExtractUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ooxml.POIXMLProperties;
 import org.apache.poi.xwpf.usermodel.*;
@@ -40,6 +41,9 @@ import java.util.List;
 public class DocxExtract {
     @Autowired
     StringsUtils stringsUtils;
+    @Autowired
+    WordGradeExtractUtils wordGradeExtractUtils;
+
 
 
     public void extract(MultipartFile file) {
@@ -95,6 +99,8 @@ public class DocxExtract {
 
     private void analyzeParagraph(XWPFParagraph paragraph, XWPFDocument doc, List<String> imageBundleList) {
 
+//        HashMap<BigInteger, List<Integer>> grade = new HashMap<>();
+//        String a1 = wordGradeExtractUtils.addDocxGrade(paragraph,grade);
         String a = paragraph.getText();
 //        if (StringUtils.isEmpty(a)) {
 //            return;

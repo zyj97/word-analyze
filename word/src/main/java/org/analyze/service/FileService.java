@@ -50,10 +50,10 @@ public class FileService {
 
         if (fileName.endsWith("doc")){
             try {
-//                docExtract.extract(file);
+                docExtract.extract(file);
 //                wordExtract.testReadByExtractor(file);
 //                tiKaExtract.extract(file);
-                 hwpfExtract.testReadByDoc(file);
+//                 hwpfExtract.testReadByDoc(file);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (Exception e) {

@@ -1,8 +1,5 @@
 package org.analyze.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 /**
  * @Author: zyj
  * @Date: 2021/8/5
